@@ -13,3 +13,10 @@ def index(request, user_id):
     data = list(one_food.values('id','name','count','created_at','expiray_date'))
     data =  json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii = False)
     return HttpResponse(data, content_type='application/json')
+
+def food_count(request, food_id):
+    count = request.Post.get("count")
+    # count=1
+    food.objects.filter(pk=food_id).update(count=count)
+
+    return HttpResponse("success")
