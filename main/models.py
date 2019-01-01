@@ -10,8 +10,8 @@ class food(models.Model):
     user = models.ForeignKey(User)
     name = models.CharField(max_length=100)
     count = models.IntegerField(default=1)
-    created_at = models.DateTimeField(auto_now_add = True)
-    expiray_date = models.DateTimeField(auto_now_add = True)
+    created_at = models.DateField(auto_now_add = True)
+    expiray_date = models.DateField(auto_now_add = True)
     status = models.CharField(max_length=1 ,choices=TYPE1)
    
     def __str__(self):
