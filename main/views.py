@@ -29,3 +29,14 @@ def food_delete(request, user_id, food_id):
     # return JsonResponse({'status' : 'success', 'user_id' : user_id})
     return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
 
+def food_added(reqeust, user_id):
+    name = request.Post.get("name")
+    count = int(request.Post.get("count"))
+    created_at = reqeust.Post.get("created_at")
+    created_at = datetime.strptime(created_at, "%Y-%m-%d").date()
+    expiray_date = created_at + timedelta(days=7)
+
+    food.objects.create(name=name,count=count,created_at=created_at,expiray_date=expiray_date,user_id=user_id)
+    return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
+
+
