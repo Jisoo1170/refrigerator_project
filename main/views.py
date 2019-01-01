@@ -39,4 +39,16 @@ def food_added(reqeust, user_id):
     food.objects.create(name=name,count=count,created_at=created_at,expiray_date=expiray_date,user_id=user_id)
     return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
 
+def food_expiary(request, user_id, food_id):
+    expiary_date = request.Post.get("expiary_date")
+    expiary_date = datetime.strptime(expiary_date, "%Y-%m-%d").date()
+    food.objects.filter(pk=food_id).update(expiary_date=expiary_date)
 
+    return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
+    
+def food_created (reqeust, user_id, food_id):
+    created_at = request.Post.get("created_at")
+    created_at = datetime.strptime(created_at, "%Y-%m-%d").date()
+    food.objects.filter(pk=food_id).update(created_at=created_at)
+
+    return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
