@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import *
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -15,8 +15,8 @@ def index(request, user_id):
     return HttpResponse(data, content_type='application/json')
 
 def food_count(request, food_id):
-    count = request.Post.get("count")
-    # count=1
+    # count = request.Post.get("count")
+    count=1
     food.objects.filter(pk=food_id).update(count=count)
 
-    return HttpResponse("success")
+    return JsonResponse({'status' : 'success'})
