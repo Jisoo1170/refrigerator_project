@@ -20,3 +20,8 @@ def food_count(request, food_id):
     food.objects.filter(pk=food_id).update(count=count)
 
     return JsonResponse({'status' : 'success'})
+
+def food_delete(request, food_id):
+    food.objects.filter(pk=food_id).update(status=3)
+
+    return JsonResponse({'status' : 'success'})
