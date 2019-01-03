@@ -6,6 +6,7 @@ import datetime
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request, user_id):
@@ -29,26 +30,47 @@ def food_delete(request, user_id, food_id):
     # return JsonResponse({'status' : 'success', 'user_id' : user_id})
     return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
 
-def food_added(reqeust, user_id):
-    name = request.Post.get("name")
-    count = int(request.Post.get("count"))
-    created_at = reqeust.Post.get("created_at")
-    created_at = datetime.strptime(created_at, "%Y-%m-%d").date()
-    expiray_date = created_at + timedelta(days=7)
+@csrf_exempt
+def food_added(request, user_id):
+    print('-'*100)
+    print(request.POST.get("name"))
+    print(request.POST.get("count"))
+    print(request.POST.get("created_at"))
+    try:
+        name = request.POST.get("name")
+        count = int(request.POST.get("count"))
+        created_at = request.POST.get("created_at")
+        
+        created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d").date()
+        expiray_date = created_at + datetime.timedelta(days=7)
 
-    food.objects.create(name=name,count=count,created_at=created_at,expiray_date=expiray_date,user_id=user_id)
-    return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
+        food.objects.create(name=name,count=count,created_at=created_at,expiray_date=expiray_date,user_id=user_id, status=1)
+        return JsonResponse({"status": "success"})
+    except Exception as e:
+        return JsonResponse({"status":"fail",'message': str(e)})
+    # return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
 
+@csrf_exempt
 def food_expiary(request, user_id, food_id):
-    expiary_date = request.Post.get("expiary_date")
-    expiary_date = datetime.strptime(expiary_date, "%Y-%m-%d").date()
-    food.objects.filter(pk=food_id).update(expiary_date=expiary_date)
+    try:
+        expiray_date = request.POST.get("expiary_date")
+        expiray_date = datetime.datetime.strptime(expiray_date, "%Y-%m-%d").date()
+        food.objects.filter(pk=food_id).update(expiray_date=expiray_date)
+        return JsonResponse({"status": "success"})
+    except Exception as e:
+        return JsonResponse({"status":"fail",'message': str(e)})
 
-    return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
-    
-def food_created (reqeust, user_id, food_id):
-    created_at = request.Post.get("created_at")
-    created_at = datetime.strptime(created_at, "%Y-%m-%d").date()
-    food.objects.filter(pk=food_id).update(created_at=created_at)
+    # return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
 
-    return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
+@csrf_exempt    
+def food_created (request, user_id, food_id):
+    try:
+        created_at = request.POST.get("created_at")
+        created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d").date()
+        food.objects.filter(pk=food_id).update(created_at=created_at)
+        return JsonResponse({"status": "success"})
+    except Exception as e:
+        return JsonResponse({"status":"fail",'message': str(e)})
+
+    # return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
+
