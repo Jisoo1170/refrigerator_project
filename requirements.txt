@@ -1,0 +1,8 @@
+APScheduler==3.5.3
+Django==1.11.16
+django-debug-toolbar==1.11
+djangorestframework==3.9.0
+pytz==2018.5
+six==1.11.0
+sqlparse==0.2.4
+tzlocal==1.5.1

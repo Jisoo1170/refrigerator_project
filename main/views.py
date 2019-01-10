@@ -13,7 +13,7 @@ def index(request, user_id):
     one_user = User.objects.get(pk=user_id)
     one_food = one_user.food_set.filter(status=1)
 
-    data = list(one_food.values('id','name','count','created_at','expiray_date'))
+    data = list(one_food.values('id','name','count','created_at','expiray_date','unit'))
     data =  json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii = False)
     return HttpResponse(data, content_type='application/json')
 
@@ -32,10 +32,10 @@ def food_delete(request, user_id, food_id):
 
 @csrf_exempt
 def food_added(request, user_id):
-    print('-'*100)
-    print(request.POST.get("name"))
-    print(request.POST.get("count"))
-    print(request.POST.get("created_at"))
+    # print('-'*100)
+    # print(request.POST.get("name"))
+    # print(request.POST.get("count"))
+    # print(request.POST.get("created_at"))
     try:
         name = request.POST.get("name")
         count = int(request.POST.get("count"))
@@ -44,7 +44,7 @@ def food_added(request, user_id):
         created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d").date()
         expiray_date = created_at + datetime.timedelta(days=7)
 
-        food.objects.create(name=name,count=count,created_at=created_at,expiray_date=expiray_date,user_id=user_id, status=1)
+        food.objects.create(name=name,count=count,created_at=created_at,expiray_date=expiray_date,user_id=user_id)
         return JsonResponse({"status": "success"})
     except Exception as e:
         return JsonResponse({"status":"fail",'message': str(e)})
@@ -74,3 +74,33 @@ def food_created (request, user_id, food_id):
 
     # return HttpResponseRedirect(reverse('main:index', kwargs={'user_id': user_id}))
 
+@csrf_exempt    
+def food_unit (request, user_id, food_id):
+    try:
+        unit = int(request.POST.get("unit"))
+        food.objects.filter(pk=food_id).update(unit=unit)
+        return JsonResponse({"status": "success"})
+    except Exception as e:
+        return JsonResponse({"status":"fail",'message': str(e)})
+
+def food_deep (request, user_id):
+    one_user = User.objects.get(pk=user_id)
+    one_food = one_user.food_set.filter(status=2)
+
+    data = list(one_food.values('id','name','count','created_at','expiray_date','unit'))
+    data =  json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii = False)
+    return HttpResponse(data, content_type='application/json')
+
+def deep_add (request, user_id, food_id):
+    try:
+        food.objects.filter(pk=food_id).update(status=1)
+        return JsonResponse({"status": "success"})
+    except Exception as e:
+        return JsonResponse({"status":"fail","message": str(e)})
+
+def deep_delete (request, user_id, food_id):
+    try:
+        food.objects.filter(pk=food_id).update(status=3)
+        return JsonResponse({"status": "success"})
+    except Exception as e:
+        return JsonResponse({"status":"fail","message": str(e)})
