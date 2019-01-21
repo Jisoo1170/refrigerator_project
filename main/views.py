@@ -11,8 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 def index(request, user_id):
     one_user = User.objects.get(pk=user_id)
-    one_food = one_user.food_set.filter(status=1)
-    data = list(one_food.values('id','name','amount','created_at','expiry_date','unit'))
+    one_food = one_user.food_set.filter(status = 1)
+    data = list(one_food.values('id','name','amount','created_at','expiry_date','unit','status'))
     # data = [{'id':obj.pk, 'name':obj.name, 'amount':obj.amount, 'created_at':obj.created_at,
     #         'expiry_date':obj.expiry_date, 'unit':obj.get_unit_display()} for obj in one_food ]
     data =  json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii = False)
