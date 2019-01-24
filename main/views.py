@@ -45,9 +45,9 @@ def food_added(request, user_id):
     # print(request.POST.get("amount"))
     # print(request.POST.get("created_at"))
     try:
-        name = request.POST.get("name")
-        amount = int(request.POST.get("amount"))
-        created_at = request.POST.get("created_at")
+        name = eval(request.body.decode('utf-8')).get('name')
+        amount = eval(request.body.decode('utf-8')).get('amount')
+        created_at = eval(request.body.decode('utf-8')).get('created_at')
         
         created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d").date()
         expiry_date = created_at + datetime.timedelta(days=7)
@@ -148,18 +148,23 @@ def recipe (request, recipe_id):
 @csrf_exempt
 def deep_receive (request, user_id):
     try:
-        data = request.body.decode('utf-8')
-        received_json_data = json.loads(data)
+        received_json_data = json.loads(request.body.decode("utf-8"))
+        print(received_json_data)
         for o in received_json_data:
             name = o.get("name")
-            food.objects.create(name=name,user_id=user_id, status=2)
+            print(name)
+            print(food.objects.filter(user_id=user_id).filter(name=name).count())
+            if food.objects.filter(user_id=user_id).filter(name=name).count() == 0:
+                print(name)
+                print(food.objects.filter(user_id=user_id).filter(name=name).count())
+                food.objects.create(name=name,user_id=user_id, status=2)
         return JsonResponse({"status": "success"})
     except Exception as e:
         return JsonResponse({"status":"fail",'message': str(e)})
     # return HttpResponse(data, content_type='application/json')
 
 def recommand(request, user_id):
-    one = food.objects.filter(expiry_date__gte=datetime.datetime.now().date()).order_by('expiry_date')[0]
+    one = food.objects.filter(status=1).filter(expiry_date__gte=datetime.datetime.now().date()).order_by('expiry_date')[0]
     r_id = recipe_food.objects.filter(irdnt_nm=one.name).values('recipe_id')
     recipes = recipe_info.objects.filter(recipe_id__in=r_id)
 
