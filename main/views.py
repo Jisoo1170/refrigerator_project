@@ -152,12 +152,14 @@ def deep_receive (request, user_id):
         print(received_json_data)
         for o in received_json_data:
             name = o.get("name")
-            print(name)
-            print(food.objects.filter(user_id=user_id).filter(name=name).count())
-            if food.objects.filter(user_id=user_id).filter(name=name).count() == 0:
+            # print(name)
+            # print(food.objects.filter(user_id=user_id).filter(name=name).count())
+            if food.objects.filter(user_id=2).filter(name=name).exclude(status=3).count() == 0:
                 print(name)
                 print(food.objects.filter(user_id=user_id).filter(name=name).count())
-                food.objects.create(name=name,user_id=user_id, status=2)
+                # print(datetime.datetime.now())
+                expiry_date = datetime.datetime.now() + datetime.timedelta(days=7)
+                food.objects.create(name=name,user_id=2, status=2, expiry_date=expiry_date)
         return JsonResponse({"status": "success"})
     except Exception as e:
         return JsonResponse({"status":"fail",'message': str(e)})
